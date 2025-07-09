@@ -62,6 +62,49 @@
         .json-key { color: #5eead4; } /* teal-300 */
         .json-string { color: #a5f3fc; } /* cyan-200 */
         .json-number { color: #f0abfc; } /* fuchsia-300 */
+        
+        /* Success Animation */
+        .success-animation { display: none; }
+        .file-uploaded .success-animation { display: block; }
+        .file-uploaded .upload-prompt { display: none; }
+        
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #14b8a6; /* teal-500 */
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            margin: 10% auto;
+            box-shadow: inset 0px 0px 0px #14b8a6;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+        @keyframes fill {
+            100% { box-shadow: inset 0px 0px 0px 30px #14b8a6; }
+        }
     </style>
 </head>
 <body class="text-gray-200 flex items-center justify-center min-h-screen p-4">
@@ -82,9 +125,17 @@
                             1. Upload a File
                         </h2>
                         <div id="dropzone" class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-teal-500 hover:bg-gray-700/50 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-gray-500 mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
-                            <p class="text-gray-400">Drag & drop, or <span class="font-semibold text-teal-400">click to browse</span></p>
-                            <p class="text-gray-500 text-sm mt-1">(Supports PDF, PNG, JPG)</p>
+                            <div class="upload-prompt">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-gray-500 mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                                <p class="text-gray-400">Drag & drop, or <span class="font-semibold text-teal-400">click to browse</span></p>
+                                <p class="text-gray-500 text-sm mt-1">(Supports PDF, PNG, JPG)</p>
+                            </div>
+                            <div class="success-animation">
+                                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                                </svg>
+                            </div>
                             <p id="fileName" class="text-teal-400 mt-2 text-sm"></p>
                         </div>
                         <input type="file" id="fileUpload" class="hidden" accept="image/png, image/jpeg, image/webp, image/bmp, application/pdf">
@@ -101,7 +152,7 @@
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-teal-400"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"/></svg>
                            2. Provide Image URL
                         </h2>
-                        <input type="text" id="imageUrl" placeholder="https://example.com/image.png" class="w-full bg-gray-700 border border-gray-600 rounded-md p-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition">
+                        <input type="text" id="imageUrl" placeholder="https://example.com/image.png" class="w-full bg-gray-700 border border-gray-600 rounded-md p-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition disabled:bg-gray-700/50 disabled:cursor-not-allowed">
                     </div>
 
                     <button id="processBtn" class="btn-3d w-full flex items-center justify-center text-white font-bold py-3 px-4 rounded-lg" disabled>
@@ -130,6 +181,11 @@
                 </div>
             </div>
         </main>
+
+        <footer class="text-center py-8 text-sm text-gray-500">
+            <p>Built by Tejas Jagdale &amp; the DataLens Team</p>
+            <p id="copyright" class="mt-1"></p>
+        </footer>
     </div>
 
     <script>
@@ -144,12 +200,14 @@
         const copyBtn = document.getElementById('copyBtn');
         const dropzone = document.getElementById('dropzone');
         const fileNameEl = document.getElementById('fileName');
+        const copyrightEl = document.getElementById('copyright');
 
         let currentFile = null;
         let processedDataForCopy = [];
         
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+        // --- Event Listeners ---
         dropzone.addEventListener('click', () => fileUpload.click());
         dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-teal-500', 'bg-gray-700/50'); });
         dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-teal-500', 'bg-gray-700/50'); });
@@ -170,6 +228,15 @@
         processBtn.addEventListener('click', processInput);
         copyBtn.addEventListener('click', copyToClipboard);
 
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !processBtn.disabled) {
+                event.preventDefault();
+                processInput();
+            }
+        });
+
+        copyrightEl.textContent = `© ${new Date().getFullYear()} DataLens. All Rights Reserved.`;
+
         function updateProcessButtonState(isReady) {
             processBtn.disabled = !isReady;
             if (isReady) {
@@ -188,18 +255,24 @@
                 updateProcessButtonState(false);
                 return;
             }
+            clearFileInput(false); // Clear previous state without resetting file
             currentFile = file;
             fileNameEl.textContent = file.name;
             fileNameEl.classList.remove('text-red-400');
             fileNameEl.classList.add('text-teal-400');
-            imageUrlInput.value = '';
+            imageUrlInput.disabled = true;
+            dropzone.classList.add('file-uploaded');
             updateProcessButtonState(true);
         }
         
-        function clearFileInput() {
-            currentFile = null;
-            fileUpload.value = '';
+        function clearFileInput(resetValue = true) {
+            if (resetValue) {
+                currentFile = null;
+                fileUpload.value = '';
+            }
             fileNameEl.textContent = '';
+            imageUrlInput.disabled = false;
+            dropzone.classList.remove('file-uploaded');
             updateProcessButtonState(false);
         }
 
@@ -221,19 +294,16 @@
             }
         }
         
-        // --- DATA FORMATTING ---
         function formatExtractedData(text) {
             const data = {};
             
-            // Pre-clean common OCR errors
-            let cleanedText = text.replace(/(\w)you(\w)/g, '$1 you $2'); // Fix spacing around "you"
+            let cleanedText = text.replace(/(\w)you(\w)/g, '$1 you $2');
             cleanedText = cleanedText.replace(/Failure-to-?file/gi, 'Failure-to-file');
             cleanedText = cleanedText.replace(/Failure-to-?pay/gi, 'Failure-to-pay');
-            cleanedText = cleanedText.replace(/~+/g, ''); // Remove tilde characters
+            cleanedText = cleanedText.replace(/[~_]+/g, '');
             
             let remainingText = cleanedText;
 
-            // --- 1. Prioritize Notice Details ---
             const noticeDetails = {};
             const noticeRules = [
                 { key: 'Notice Identifier', regex: /Notice\s+(CP\w+)/i },
@@ -259,7 +329,6 @@
                 data['Notice Details'] = noticeDetails;
             }
 
-            // --- 2. Recipient Info ---
             const recipientInfo = {};
             const recipientRules = [
                  { key: 'Recipient Name', regex: /^([A-Z\s,.]+Q\.[A-Z\s,.]+)/m },
@@ -279,7 +348,6 @@
                 data['Recipient Info'] = recipientInfo;
             }
 
-            // --- 3. Billing Summary ---
             const billingSummary = {};
             const billingBlockRegex = /Billing Summary([\s\S]*?)(?=Amount due by|What you need to do|If you agree)/m;
             const billingBlockMatch = remainingText.match(billingBlockRegex);
@@ -296,7 +364,6 @@
                 }
             }
 
-            // --- 4. Amounts and Dates ---
             const amountDueRule = { key: 'Amount Due', regex: /(?:Amount due|Amount due by.*?)\s+(\$ ?[\d,.]+\.\d{2})/gi };
             const amountMatches = cleanedText.match(amountDueRule.regex);
             if (amountMatches) {
@@ -313,9 +380,8 @@
                 remainingText = remainingText.replace(dueDateMatch[0], '');
             }
 
-            // --- 5. Other Information ---
             const junkPatterns = [
-                /eet eee/, /RARER SRR/, /OTANUED ON DECK/, /^\s*e\s/
+                /eet eee/, /RARER SRR/, /OTANUED ON DECK/, /^\s*e\s/, /^\d{4}\s\d{7}\s\d{10}\s\d{4}$/
             ];
             const otherInfo = remainingText
                 .split('\n')
@@ -435,7 +501,6 @@
                 if(processedDataForCopy.length > 1) {
                     textToCopy += `--- Page ${index + 1} ---\n`;
                 }
-                // A specific order for copying
                 const keyOrder = ['Notice Details', 'Recipient Info', 'Billing Summary', 'Amount Due', 'Due Date', 'Other Information'];
                 keyOrder.forEach(key => {
                     if (pageData[key]) {
@@ -475,3 +540,4 @@
     </script>
 </body>
 </html>
+
